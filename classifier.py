@@ -1,3 +1,5 @@
+import difflib
+
 from sklearn import tree
 from sklearn import svm
 from sklearn.ensemble import RandomForestClassifier
@@ -9,6 +11,21 @@ from utils import generate_data_set
 
 import numpy as np
 import sys
+from pyspark.sql.functions import udf
+
+def intersect(xs):
+    xs = set(xs)
+    @udf("array<long>")
+    def _(ys):
+        return list(xs.intersection(ys))
+    return _
+a_list = [1, 4, 6]
+
+df = spark.createDataFrame([
+    (1, [3, 4, 8]), (2, [7, 2, 6])
+], ("id", "articles"))
+
+df.withColumn("intersect", intersect(a_list)("articles")).show()
 
 def load_data():
     '''
@@ -49,73 +66,88 @@ def run(classifier, name):
     accuracy = 100.0 * accuracy_score(test_outputs, predictions)
     print ("Accuracy score using {} is: {}\n".format(name, accuracy))
 
+#
+# if __name__ == '__main__':
+#     '''
+#     Main function -
+#     Following are several models trained to detect phishing webstes.
+#     Only the best and worst classifier outputs are displayed.
+#     '''
+#
+#     # Decision tree
+#     # classifier = tree.DecisionTreeClassifier()
+#     # run(classifier, "Decision tree")
+#
+#     # Random forest classifier (low accuracy)
+#     # classifier = RandomForestClassifier()
+#     # run(classifier, "Random forest")
+#
+#     # Custom random forest classifier 1
+#     print ("Best classifier for detecting phishing websites.")
+#     classifier = RandomForestClassifier(n_estimators=500, max_depth=15, max_leaf_nodes=10000)
+#     run(classifier, "Random forest")
+#
+#     # Linear SVC classifier
+#     # classifier = svm.SVC(kernel='linear')
+#     # run(classifier, "SVC with linear kernel")
+#
+#     # RBF SVC classifier
+#     # classifier = svm.SVC(kernel='rbf')
+#     # run(classifier, "SVC with rbf kernel")
+#
+#     # Custom SVC classifier 1
+#     # classifier = svm.SVC(decision_function_shape='ovo', kernel='linear')
+#     # run(classifier, "SVC with ovo shape")
+#
+#     # Custom SVC classifier 2
+#     # classifier = svm.SVC(decision_function_shape='ovo', kernel='rbf')
+#     # run(classifier, "SVC with ovo shape")
+#
+#     # NuSVC classifier
+#     # classifier = svm.NuSVC()
+#     # run(classifier, "NuSVC")
+#
+#     # OneClassSVM classifier
+#     print ("Worst classifier for detecting phishing websites.")
+#     classifier = svm.OneClassSVM()
+#     run(classifier, "One Class SVM")
+#
+#     # print "K nearest neighbours algorithm."
+#     # nbrs = KNeighborsClassifier(n_neighbors=5, algorithm='ball_tree')
+#     # run(nbrs, "K nearest neighbours")
+#
+#     # Gradient boosting classifier
+#     # classifier = GradientBoostingClassifier()
+#     # run(classifier, "GradientBoostingClassifier")
+#
+#     # Take user input and check whether its phishing URL or not.
+#
+#     data_set = generate_data_set("http://kettlebellworkoutspot.com/wp-contact.php?sponsore=kaufentiele.de/1/&dir=/CRYSZnk/&type=x6&orders=779507949&payment?f=ZqWGIkC")
+#
+#     # Reshape the array
+#     data_set = np.array(data_set).reshape(1, -1)
+#
+#     # Load the date
+#     train_inputs, test_inputs,train_outputs, test_outputs = load_data()
+#
+#     # Create and train the classifier
+#     classifier = RandomForestClassifier(n_estimators=500, max_depth=15, max_leaf_nodes=10000)
+#     classifier.fit(train_inputs, train_outputs)
+#
+#     print (classifier.predict(data_set))
+# # [-1, 1, -1, -1, 1, 1, 0, -1, -1, -1, -1, 1, -1, -1, -1, 0, 1, -1, -1, -1, -1, -1, 1, 1, -1, -1, -1, -1, -1, -1]
 
-if __name__ == '__main__':
-    '''
-    Main function -
-    Following are several models trained to detect phishing webstes.
-    Only the best and worst classifier outputs are displayed.
-    '''
+from similaritymeasures import Similarity
 
-    # Decision tree
-    # classifier = tree.DecisionTreeClassifier()
-    # run(classifier, "Decision tree")
 
-    # Random forest classifier (low accuracy)
-    # classifier = RandomForestClassifier()
-    # run(classifier, "Random forest")
+def main():
+    """ the main function to create Similarity class instance and get used to it """
 
-    # Custom random forest classifier 1
-    print ("Best classifier for detecting phishing websites.")
-    classifier = RandomForestClassifier(n_estimators=500, max_depth=15, max_leaf_nodes=10000)
-    run(classifier, "Random forest")
+    measures = Similarity()
 
-    # Linear SVC classifier
-    # classifier = svm.SVC(kernel='linear')
-    # run(classifier, "SVC with linear kernel")
+    print(measures.euclidean_distance([0, 3, 4, 5], [7, 6, 3, -1]))
+    print(measures.jaccard_similarity([0, 1, 2, 5, 6], [0, 2, 3, 5, 7, 9]))
 
-    # RBF SVC classifier
-    # classifier = svm.SVC(kernel='rbf')
-    # run(classifier, "SVC with rbf kernel")
 
-    # Custom SVC classifier 1
-    # classifier = svm.SVC(decision_function_shape='ovo', kernel='linear')
-    # run(classifier, "SVC with ovo shape")
-
-    # Custom SVC classifier 2
-    # classifier = svm.SVC(decision_function_shape='ovo', kernel='rbf')
-    # run(classifier, "SVC with ovo shape")
-
-    # NuSVC classifier
-    # classifier = svm.NuSVC()
-    # run(classifier, "NuSVC")
-
-    # OneClassSVM classifier
-    print ("Worst classifier for detecting phishing websites.")
-    classifier = svm.OneClassSVM()
-    run(classifier, "One Class SVM")
-
-    # print "K nearest neighbours algorithm."
-    # nbrs = KNeighborsClassifier(n_neighbors=5, algorithm='ball_tree')
-    # run(nbrs, "K nearest neighbours")
-
-    # Gradient boosting classifier
-    # classifier = GradientBoostingClassifier()
-    # run(classifier, "GradientBoostingClassifier")
-
-    # Take user input and check whether its phishing URL or not.
-
-    data_set = generate_data_set("http://kettlebellworkoutspot.com/wp-contact.php?sponsore=kaufentiele.de/1/&dir=/CRYSZnk/&type=x6&orders=779507949&payment?f=ZqWGIkC")
-
-    # Reshape the array
-    data_set = np.array(data_set).reshape(1, -1)
-
-    # Load the date
-    train_inputs, test_inputs,train_outputs, test_outputs = load_data()
-
-    # Create and train the classifier
-    classifier = RandomForestClassifier(n_estimators=500, max_depth=15, max_leaf_nodes=10000)
-    classifier.fit(train_inputs, train_outputs)
-
-    print (classifier.predict(data_set))
-# [-1, 1, -1, -1, 1, 1, 0, -1, -1, -1, -1, 1, -1, -1, -1, 0, 1, -1, -1, -1, -1, -1, 1, 1, -1, -1, -1, -1, -1, -1]
+if __name__ == "__main__":
+    main()
