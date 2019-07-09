@@ -7,10 +7,10 @@ import pandas as pd
 ####input your credentials here
 
 def Collect_tweets(Hashtag , Number_of_tweets,Date):
-    consumer_key = 'OIZUckqxoE8QjlO2rp4YEXJDp'
-    consumer_secret = 'RMjVCxZE1GtQalBM0ZVOtHqllC3nYeJvsrhau3KBA1MhfmrCHH'
-    access_token = '937653227918675969-OwkD2puKOsQFkLOAtzjlmmpAWlcZ02z'
-    access_token_secret = 'hTtje1Ei2prVvhGH94J9Jx9uxuUidGkoCfEWQrxuHkHm0'
+    consumer_key = ''
+    consumer_secret = ''
+    access_token = ''
+    access_token_secret = ''
 
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
