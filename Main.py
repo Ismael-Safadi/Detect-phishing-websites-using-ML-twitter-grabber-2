@@ -19,10 +19,10 @@ print("""
 Hashtag = input("Enter hashtag on twitter : ")
 Number_of_tweets = input("Enter Number of tweets : ")
 Date = input("Enter date that you want to start collecting tweets from should be YYYY-MM-DD : ")
-consumer_key = 'OIZUckqxoE8QjlO2rp4YEXJDp'
-consumer_secret = 'RMjVCxZE1GtQalBM0ZVOtHqllC3nYeJvsrhau3KBA1MhfmrCHH'
-access_token = '937653227918675969-OwkD2puKOsQFkLOAtzjlmmpAWlcZ02z'
-access_token_secret = 'hTtje1Ei2prVvhGH94J9Jx9uxuUidGkoCfEWQrxuHkHm0'
+consumer_key = ''
+consumer_secret = ''
+access_token = ''
+access_token_secret = ''
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
